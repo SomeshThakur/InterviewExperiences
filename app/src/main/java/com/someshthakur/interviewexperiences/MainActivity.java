@@ -1,10 +1,13 @@
 package com.someshthakur.interviewexperiences;
-//Test
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,20 +17,25 @@ public class MainActivity extends AppCompatActivity {
     private CompanyAdapter companyAdapter;
     private List<Company> companyList;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
         companyList = new ArrayList<>();
         companyAdapter = new CompanyAdapter(this, companyList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(companyAdapter);
-
+        recyclerView.setHasFixedSize(true);
         prepareComapaniesList();
+        recyclerView.setAdapter(companyAdapter);
     }
 
     private void prepareComapaniesList() {
@@ -54,4 +62,5 @@ public class MainActivity extends AppCompatActivity {
         companyList.add(c);
         companyAdapter.notifyDataSetChanged();
     }
+
 }

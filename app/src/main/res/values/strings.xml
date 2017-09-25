@@ -1,7 +1,9 @@
 <resources>
+    <string name="title_main">Companies</string>
     <string name="app_name">Interview Experiences</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="large_text">
+        "-----THIS IS LONG DUMMY TEXT-----\n\n\n"
         "Material is the metaphor.\n\n"
 
         "A material metaphor is the unifying theory of a rationalized space and a system of motion."
