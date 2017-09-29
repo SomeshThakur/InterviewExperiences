@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,8 @@ public class ExperienceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_experience_list);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_list);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         experiencesList = new ArrayList<>();
         experienceAdapter = new ExperienceAdapter(this, experiencesList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -38,4 +40,14 @@ public class ExperienceActivity extends AppCompatActivity {
         }
         experienceAdapter.notifyDataSetChanged();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            super.onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
