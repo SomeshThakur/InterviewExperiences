@@ -1,5 +1,6 @@
 package com.someshthakur.interviewexperiences;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -7,8 +8,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ExperienceActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -28,14 +36,36 @@ public class ExperienceActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
-        prepareExperincesList();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String companyName = getIntent().getStringExtra("company");
+        final DatabaseReference myRef = database.getReference("companies").child(companyName);
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setTitle("Loading Data from server");
+        progress.setMessage("Please Wait...");
+        progress.setCancelable(false);
+        progress.show();
+
+        myRef.child("Experinces").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                prepareExperincesList((Map<String, String>) dataSnapshot.getValue());
+                progress.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         recyclerView.setAdapter(experienceAdapter);
     }
 
-    private void prepareExperincesList() {
+    private void prepareExperincesList(Map<String, String> exps) {
         Experience e;
-        for (int i = 1; i < 11; i++) {
-            e = new Experience("This is Experience " + i, i, getIntent().getIntExtra("image", 0));
+        for (Map.Entry<String, String> exp : exps.entrySet()) {
+            e = new Experience(exp.getKey(), exp.getValue());
             experiencesList.add(e);
         }
         experienceAdapter.notifyDataSetChanged();

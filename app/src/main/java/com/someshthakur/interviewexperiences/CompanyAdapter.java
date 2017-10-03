@@ -12,6 +12,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -38,31 +40,30 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
         Animation animation = AnimationUtils.loadAnimation(mContext,
                 (position > lastPosition) ? R.anim.up_from_bottom
                         : R.anim.down_from_top);
         holder.itemView.startAnimation(animation);
         lastPosition = position;
 
-
         final Company company = companiesList.get(position);
-        Glide.with(mContext).load(company.getImage()).into(holder.banner);
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(company.getTitle().toLowerCase() + ".png");
+
+        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.banner);
+
         holder.banner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showInterviewsList(view, company);
+                showInterviewsList(company.getTitle());
             }
         });
     }
 
-    public void showInterviewsList(View view, Company company) {
+    public void showInterviewsList(String companyName) {
         Intent i = new Intent(mContext, ExperienceActivity.class);
-        i.putExtra("image", company.getImage());
+        i.putExtra("company", companyName);
         mContext.startActivity(i);
-
-        //  ((Activity)mContext).overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-
     }
 
     @Override

@@ -13,8 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
 
 /**
@@ -35,8 +33,8 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
     public void showExperience(View view, Experience exp, MyViewHolder holder) {
         Intent i = new Intent(mContext, ScrollingActivity.class);
         ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, holder.imageView, "sharedTitle");
-        i.putExtra("title", exp.getExpText());
-        i.putExtra("image", exp.getImage());
+        i.putExtra("title", exp.getTitle());
+        i.putExtra("info", exp.getInfo());
         mContext.startActivity(i, optionsCompat.toBundle());
     }
 
@@ -62,8 +60,8 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         lastPosition = position;
 
         final Experience experience = experiencesList.get(position);
-        holder.textView.setText(experience.getExpText().toString());
-        Glide.with(mContext).load(experience.getImage()).into(holder.imageView);
+        holder.textView.setText(experience.getTitle().toString());
+        // Glide.with(mContext).using(new FirebaseImageLoader()).load().into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="Experinces List"
+            android:text="Experiences"
             android:textColor="@color/colorAccent"
             android:textSize="24sp"
             android:textStyle="bold" />

@@ -8,20 +8,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 public class ScrollingActivity extends AppCompatActivity {
     private ImageView imageView;
-    private TextView textView;
+    private TextView title, info;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
         imageView = (ImageView) findViewById(R.id.imageView);
-        Glide.with(this).load(getIntent().getExtras().getInt("image")).into(imageView);
-        textView = (TextView) findViewById(R.id.exp_title);
-        textView.setText(getIntent().getExtras().getString("title").toString());
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // Glide.with(this).load(getIntent().getExtras().getInt("image")).into(imageView);
+        title = (TextView) findViewById(R.id.exp_title);
+        title.setText(getIntent().getExtras().getString("title").toString());
+        info = (TextView) findViewById(R.id.exp_info);
+        info.setText(getIntent().getExtras().getString("info").toString());
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fav);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
