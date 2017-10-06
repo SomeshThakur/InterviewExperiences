@@ -51,7 +51,6 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
         final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(company.getTitle().toLowerCase() + ".png");
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.banner);
-
         holder.banner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

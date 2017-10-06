@@ -22,6 +22,7 @@ public class ExperienceActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ExperienceAdapter experienceAdapter;
     private List<Experience> experiencesList;
+    private String companyName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class ExperienceActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String companyName = getIntent().getStringExtra("company");
+        companyName = getIntent().getStringExtra("company");
         final DatabaseReference myRef = database.getReference("companies").child(companyName);
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setTitle("Loading Data from server");
@@ -65,7 +66,7 @@ public class ExperienceActivity extends AppCompatActivity {
     private void prepareExperincesList(Map<String, String> exps) {
         Experience e;
         for (Map.Entry<String, String> exp : exps.entrySet()) {
-            e = new Experience(exp.getKey(), exp.getValue());
+            e = new Experience(companyName, exp.getKey(), exp.getValue());
             experiencesList.add(e);
         }
         experienceAdapter.notifyDataSetChanged();
@@ -79,5 +80,4 @@ public class ExperienceActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

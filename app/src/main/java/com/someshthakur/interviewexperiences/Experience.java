@@ -5,14 +5,19 @@ package com.someshthakur.interviewexperiences;
  */
 
 public class Experience {
-    private String title, info;
+    private String title, info, company;
 
     public Experience() {
     }
 
-    public Experience(String title, String info) {
+    public Experience(String company, String title, String info) {
+        this.company = company;
         this.title = title;
         this.info = info;
+    }
+
+    public String getCompany() {
+        return company;
     }
 
     public String getTitle() {

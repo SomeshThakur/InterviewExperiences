@@ -13,6 +13,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.List;
 
 /**
@@ -35,6 +39,7 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, holder.imageView, "sharedTitle");
         i.putExtra("title", exp.getTitle());
         i.putExtra("info", exp.getInfo());
+        i.putExtra("company", exp.getCompany());
         mContext.startActivity(i, optionsCompat.toBundle());
     }
 
@@ -60,8 +65,9 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         lastPosition = position;
 
         final Experience experience = experiencesList.get(position);
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(experience.getCompany().toLowerCase() + ".png");
         holder.textView.setText(experience.getTitle().toString());
-        // Glide.with(mContext).using(new FirebaseImageLoader()).load().into(holder.imageView);
+        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
