@@ -92,13 +92,17 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">About Us</string>
     <string name="title_activity_navigation">Navigation</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="about_us">\t\t\t\tInterview experiences
+        \nMade with love and lots of code :)
+        \n\nShare your valuable interview experience with others...
+        \n\nDeveloper: Somesh Thakur \nEmail: someshthakut33@gmail.com</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -113,4 +117,5 @@
         completions."
     </string>
     <string name="title_activity_logout_acitivy">LogoutAcitivy</string>
+    <string name="title_activity_share_experience">ShareExperienceActivity</string>
 </resources>

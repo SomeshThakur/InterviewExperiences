@@ -43,37 +43,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CompanyAdapter companyAdapter;
     private List<Company> companyList;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListner;
     private TextView userName, userEmail;
 
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mAuthListner = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() == null) {
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                }
-            }
-        };
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        recyclerView = findViewById(R.id.recycler_view);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
-        userName = (TextView) header.findViewById(R.id.userNameText);
-        userEmail = (TextView) header.findViewById(R.id.userEmailText);
+        userName = header.findViewById(R.id.userNameText);
+        userEmail = header.findViewById(R.id.userEmailText);
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             userName.setText(mAuth.getCurrentUser().getDisplayName());
             userEmail.setText(mAuth.getCurrentUser().getEmail());
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -114,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -136,8 +127,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //  getMenuInflater().inflate(R.menu.navigation, menu);
+        getMenuInflater().inflate(R.menu.navigation, menu);
         return true;
+    }
+
+    public void showAboutus() {
+        new AlertDialog.Builder(this)
+                .setTitle("About us")
+                .setMessage(getString(R.string.about_us).replaceAll("\\+", ""))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setIcon(R.mipmap.ic_launcher)
+                .show();
     }
 
     @Override
@@ -146,11 +151,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            showAboutus();
         } else if (id == android.R.id.home) {
             if (drawer.isDrawerOpen(GravityCompat.START))
                 drawer.closeDrawer(GravityCompat.START);
@@ -178,12 +182,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             logout();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            intent.putExtra("logout",true);
             startActivity(intent);
             MainActivity.this.finish();
+        } else if (id == R.id.nav_share) {
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -198,35 +202,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mProgressDialog.show();
     }
 
-    private void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.hide();
-        }
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListner);
-
-    }
 
     private void logout() {
         mAuth = FirebaseAuth.getInstance();
-        mAuthListner = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() == null) {
-                    Toast.makeText(getApplicationContext(), "Main this is auth state call", Toast.LENGTH_LONG).show();
-                    hideProgressDialog();
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    MainActivity.this.finish();
-                }
-            }
-        };
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -250,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(@NonNull Status status) {
-                            Toast.makeText(MainActivity.this, "Google Sign out successfully", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Google Sign out was successful", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
