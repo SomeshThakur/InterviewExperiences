@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }
@@ -59,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                 hideProgressDialog();
                 if (firebaseAuth.getCurrentUser() != null) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     if (flag)
                         Toast.makeText(LoginActivity.this, "Google Sign in was successful", Toast.LENGTH_LONG).show();
