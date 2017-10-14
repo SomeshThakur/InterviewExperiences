@@ -103,11 +103,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            recreate();
+                            dialog.dismiss();
+                            finish();
                         }
                     }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
                     onBackPressed();
                 }
             }).show();
@@ -117,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                prepareComapaniesList((Map<String, Object>) dataSnapshot.getValue());
                 progress.dismiss();
+                prepareComapaniesList((Map<String, Object>) dataSnapshot.getValue());
             }
 
             @Override
@@ -148,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                             MainActivity.this.finish();
                         }
 
@@ -171,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        dialogInterface.dismiss();
                     }
                 })
                 .setIcon(R.mipmap.ic_launcher)
@@ -227,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 } catch (InterruptedException e) {
 
                                 }
+                                dialog.dismiss();
                                 startActivity(intent);
                                 finish();
                             }
