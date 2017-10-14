@@ -1,8 +1,11 @@
 package com.someshthakur.interviewexperiences;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,9 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,16 +40,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private RecyclerView recyclerView;
     private CompanyAdapter companyAdapter;
-    private List<Company> companyList;
+    private ArrayList<Company> companyList;
     private FirebaseAuth mAuth;
     private TextView userName, userEmail;
-
+    private ImageView userImg;
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
 
@@ -53,16 +57,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
         userName = header.findViewById(R.id.userNameText);
         userEmail = header.findViewById(R.id.userEmailText);
+        userImg = header.findViewById(R.id.img);
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             userName.setText(mAuth.getCurrentUser().getDisplayName());
             userEmail.setText(mAuth.getCurrentUser().getEmail());
+            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).into(userImg);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,10 +82,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("companies");
         final ProgressDialog progress = new ProgressDialog(this);
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
         progress.setTitle("Loading Data from server");
         progress.setMessage("Please Wait...");
         progress.setCancelable(false);
         progress.show();
+
+        if (!isConnected) {
+            progress.dismiss();
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("No internet Connection found. Please connect to internet and try again later.")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            recreate();
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    onBackPressed();
+                }
+            }).show();
+        }
+
+
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -177,29 +210,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.logout) {
-            showProgressDialog();
-            logout();
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            MainActivity.this.finish();
+        if (id == R.id.nav_logout) {
+            final Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (mAuth.getCurrentUser() == null) startActivity(intent);
+            else
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to Logout ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                logout();
+                                try {
+                                    Thread.sleep(200);
+                                } catch (InterruptedException e) {
+
+                                }
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
         } else if (id == R.id.nav_share) {
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(MainActivity.this, "Oops! Login to share your experience", Toast.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(MainActivity.this, ShareExperienceActivity.class);
+                startActivity(intent);
+            }
+        } else if (id == R.id.nav_fav) {
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(MainActivity.this, "Oops! Login to view your fav experience", Toast.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                startActivity(intent);
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(true);
-        }
-
-        mProgressDialog.show();
     }
 
 

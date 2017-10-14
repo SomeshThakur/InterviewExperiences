@@ -65,9 +65,12 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         lastPosition = position;
 
         final Experience experience = experiencesList.get(position);
-        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(experience.getCompany().toLowerCase() + ".png");
         holder.textView.setText(experience.getTitle().toString());
-        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.imageView);
+        final String company = experience.getCompany().toLowerCase();
+        String experinceCount = experience.getInfo();
+        final StorageReference[] storageReference = {FirebaseStorage.getInstance().getReference().child(company + experinceCount + ".png")};
+        storageReference[0] = FirebaseStorage.getInstance().getReference().child(company + ".png");
+        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference[0]).into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,14 +84,14 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         return experiencesList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public ImageView imageView;
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+        ImageView imageView;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
-            textView = (TextView) view.findViewById(R.id.textView);
-            imageView = (ImageView) view.findViewById(R.id.expImage);
+            textView = view.findViewById(R.id.textView);
+            imageView = view.findViewById(R.id.expImage);
         }
     }
 }

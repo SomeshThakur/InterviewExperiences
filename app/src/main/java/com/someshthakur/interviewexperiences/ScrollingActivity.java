@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -31,7 +33,7 @@ public class ScrollingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
         imageView = (ImageView) findViewById(R.id.imageView);
-        // Glide.with(this).load(getIntent().getExtras().getInt("image")).into(imageView);
+        //Glide.with(this).load(getIntent().getExtras().getInt("image")).into(imageView);
         title = (TextView) findViewById(R.id.exp_title);
         title.setText(getIntent().getExtras().getString("title").toString());
         info = (TextView) findViewById(R.id.exp_info);
@@ -67,9 +69,19 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Action will be added here", Snackbar.LENGTH_LONG)
+                addtoFavList();
+                Snackbar.make(view, "Added to favorite list", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    private void addtoFavList() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference databaseReference = database.getReference("Responses").child("favList");
+
+        databaseReference.child("title").setValue(title.getText().toString());
+
     }
 }
