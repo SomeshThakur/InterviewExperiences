@@ -2,7 +2,6 @@ package com.someshthakur.interviewexperiences;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -69,7 +68,9 @@ public class ShareExperienceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (expInfo.getText().toString().trim().equals("")) {
-                    expInfo.setError("Empty?");
+                    expInfo.setError("No Description?");
+                } else if (expTitle.getText().toString().trim().equals("")) {
+                    expTitle.setError("No Title?");
                 } else {
                     submitResponse(expInfo.getText().toString());
                     Toast.makeText(getApplicationContext(), "Submitted to server", Toast.LENGTH_LONG).show();
@@ -81,8 +82,7 @@ public class ShareExperienceActivity extends AppCompatActivity {
     }
 
     private void submitResponse(final String info) {
-        final int[] count = new int[1];
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final int[] count = {0};
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         Query lastQuery = databaseReference.child("companies").child(spinner.getSelectedItem().toString()).child("Experinces").orderByValue().limitToLast(1);
         lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,32 +91,37 @@ public class ShareExperienceActivity extends AppCompatActivity {
                 String value = dataSnapshot.getValue().toString();
                 count[0] = Integer.parseInt(value.substring(value.indexOf("=") + 1, value.indexOf("}")));
                 count[0] += 1;
+                uploadFile(count, info);
+
             }
 
             @Override
-
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+    }
 
-        final DatabaseReference databaseReference2 = database.getReference("Responses")
-                .child("company")
-                .child(spinner.getSelectedItem().toString())
-                .child(expTitle.getText().toString());
+    private void uploadFile(final int[] count, String info) {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference databaseReference = database.getReference()
+                .child("companies").child(spinner.getSelectedItem().toString())
+                .child("Experinces").child(expTitle.getText().toString());
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         File localFile = null;
         try {
-            Thread.sleep(100);
-            localFile = new File(Environment.getExternalStorageDirectory() + "/" + spinner.getSelectedItem().toString().toLowerCase() + "-" + count[0] + ".txt");
+            localFile = File.createTempFile("companyExpDesc", ".txt");
             FileWriter fr = new FileWriter(localFile);
-            fr.write(info);
-
+            fr.write("This Experience was shared by : " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                    + "\nEmail : " + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "\n\n");
+            fr.append(info);
+            fr.flush();
+            fr.close();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Cant write " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
         Uri file = Uri.fromFile(new File(localFile.toURI()));
-        StorageReference riversRef = storageReference.child(file.getLastPathSegment());
+        StorageReference riversRef = storageReference.child(spinner.getSelectedItem().toString().toLowerCase() + "-" + count[0] + ".txt");
         UploadTask uploadTask = riversRef.putFile(file);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -127,12 +132,9 @@ public class ShareExperienceActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                databaseReference2.setValue(count[0]);
-                Toast.makeText(getApplicationContext(), "Successfully uploaded file", Toast.LENGTH_LONG).show();
+                databaseReference.setValue("" + count[0]);
             }
         });
-
     }
 
     @Override

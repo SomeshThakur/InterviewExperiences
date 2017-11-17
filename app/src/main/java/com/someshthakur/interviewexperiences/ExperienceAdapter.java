@@ -1,9 +1,7 @@
 package com.someshthakur.interviewexperiences;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +24,8 @@ import java.util.List;
 public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.MyViewHolder> {
     private List<Experience> experiencesList;
     private Context mContext;
-    //  private View view;
     private int lastPosition = -1;
+    private String experinceCount;
 
     public ExperienceAdapter(Context mContext, List<Experience> experiencesList) {
         this.mContext = mContext;
@@ -36,11 +34,10 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
 
     public void showExperience(View view, Experience exp, MyViewHolder holder) {
         Intent i = new Intent(mContext, ScrollingActivity.class);
-        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, holder.imageView, "sharedTitle");
         i.putExtra("title", exp.getTitle());
         i.putExtra("info", exp.getInfo());
         i.putExtra("company", exp.getCompany());
-        mContext.startActivity(i, optionsCompat.toBundle());
+        mContext.startActivity(i);
     }
 
     @Override
@@ -67,10 +64,9 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.My
         final Experience experience = experiencesList.get(position);
         holder.textView.setText(experience.getTitle().toString());
         final String company = experience.getCompany().toLowerCase();
-        String experinceCount = experience.getInfo();
-        final StorageReference[] storageReference = {FirebaseStorage.getInstance().getReference().child(company + experinceCount + ".png")};
-        storageReference[0] = FirebaseStorage.getInstance().getReference().child(company + ".png");
-        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference[0]).into(holder.imageView);
+        experinceCount = experience.getInfo();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://interview-experiences.appspot.com/images/" + company + ".png");
+        Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

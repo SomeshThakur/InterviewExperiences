@@ -22,7 +22,7 @@ public class ExperienceActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ExperienceAdapter experienceAdapter;
     private List<Experience> experiencesList;
-    private String companyName;
+    private String companyName, dir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +39,9 @@ public class ExperienceActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        dir = getIntent().getStringExtra("dir");
         companyName = getIntent().getStringExtra("company");
-        final DatabaseReference myRef = database.getReference("companies").child(companyName);
+        final DatabaseReference myRef = database.getReference("companies/" + companyName);//.child(companyName);
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setTitle("Loading Data from server");
         progress.setMessage("Please Wait...");

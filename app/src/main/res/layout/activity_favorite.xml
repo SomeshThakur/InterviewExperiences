@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ibg"
+
+    android:orientation="vertical"
     tools:context="com.someshthakur.interviewexperiences.FavoriteActivity">
 
-    <TextView
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/favcardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:cardCornerRadius="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="Experiences"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/noFav"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:gravity="center"
         android:text="No Favorite :("
+        android:textColor="#FFFF"
         android:textSize="30dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fav_recycler_view_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
+
 </LinearLayout>

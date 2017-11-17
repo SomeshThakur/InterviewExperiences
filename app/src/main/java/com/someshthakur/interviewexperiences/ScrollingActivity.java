@@ -10,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FileDownloadTask;
@@ -27,17 +29,23 @@ import java.io.IOException;
 public class ScrollingActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView title, info;
+    private String ExpCompany, ExpCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        //Glide.with(this).load(getIntent().getExtras().getInt("image")).into(imageView);
-        title = (TextView) findViewById(R.id.exp_title);
-        title.setText(getIntent().getExtras().getString("title").toString());
-        info = (TextView) findViewById(R.id.exp_info);
-        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(getIntent().getExtras().getString("company").toString().toLowerCase() + "-" + getIntent().getExtras().getString("info").toString() + ".txt");
+        imageView = findViewById(R.id.imageView);
+        StorageReference comImg = FirebaseStorage.getInstance().getReference(getIntent().getStringExtra("company").toLowerCase() + ".png");
+        Glide.with(this).using(new FirebaseImageLoader()).load(comImg).into(imageView);
+        title = findViewById(R.id.exp_title);
+        title.setText(getIntent().getStringExtra("title"));
+        info = findViewById(R.id.exp_info);
+        ExpCompany = getIntent().getStringExtra("company");
+        ExpCount = getIntent().getStringExtra("info");
+
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(getIntent().getStringExtra("company").toLowerCase()
+                + "-" + getIntent().getExtras().getString("info").toString() + ".txt");
         File localFile = null;
         try {
             localFile = File.createTempFile("content", "txt");
@@ -65,7 +73,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Cannot download file" + getIntent().getExtras().getString("company").toString().toLowerCase() + "-" + getIntent().getExtras().getString("info").toString() + ".txt", Toast.LENGTH_LONG).show();
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fav);
+        FloatingActionButton fab = findViewById(R.id.fav);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,10 +86,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void addtoFavList() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         DatabaseReference databaseReference = database.getReference("Responses").child("favList");
-
-        databaseReference.child("title").setValue(title.getText().toString());
+        databaseReference.child(FirebaseAuth.getInstance().getCurrentUser().
+                getUid()).child(ExpCompany)
+                .child(title.getText().toString()).setValue(ExpCount);
 
     }
 }

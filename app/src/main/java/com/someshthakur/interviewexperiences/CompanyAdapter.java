@@ -3,6 +3,8 @@ package com.someshthakur.interviewexperiences;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +50,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
         lastPosition = position;
 
         final Company company = companiesList.get(position);
-        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(company.getTitle().toLowerCase() + ".png");
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images").child(company.getTitle().toLowerCase() + ".png");
 
         Glide.with(mContext).using(new FirebaseImageLoader()).load(storageReference).into(holder.banner);
         holder.banner.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +64,13 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.MyViewHo
     public void showInterviewsList(String companyName) {
         Intent i = new Intent(mContext, ExperienceActivity.class);
         i.putExtra("company", companyName);
+        SharedPreferences getPrefs = PreferenceManager
+                .getDefaultSharedPreferences(mContext);
+        if (getPrefs.getString("path", "").equals(""))
+            i.putExtra("dir", "companies");
+        else
+            i.putExtra("dir", getPrefs.getString("path", "companies"));
+        // Toast.makeText(mContext,getPrefs.getString("path","Not found"),Toast.LENGTH_LONG).show();
         mContext.startActivity(i);
     }
 

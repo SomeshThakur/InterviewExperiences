@@ -217,8 +217,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            if (mAuth.getCurrentUser() == null) startActivity(intent);
-            else
+            if (mAuth.getCurrentUser() == null) {
+                finish();
+                startActivity(intent);
+            } else
                 new AlertDialog.Builder(this)
                         .setMessage("Are you sure you want to Logout ?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

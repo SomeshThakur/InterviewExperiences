@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         skipnow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideProgressDialog();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -106,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
         }
     }
 
